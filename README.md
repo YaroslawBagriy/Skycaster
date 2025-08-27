@@ -1,0 +1,2 @@
+# Skycaster
+AI Weather Assistant
