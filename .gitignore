@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# macOS / Linux
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Project specific
+.env
