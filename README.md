@@ -38,7 +38,6 @@ It demonstrates **prompt engineering, one-shot learning, function calling, and A
 
 ## 📂 Project Structure
 
-## 📂 Project Structure
 ```text
 📂 skycaster/
 ├─ 📜 app.py               # Main CLI app with OpenAI integration
