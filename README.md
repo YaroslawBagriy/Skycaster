@@ -39,13 +39,14 @@ It demonstrates **prompt engineering, one-shot learning, function calling, and A
 ## 📂 Project Structure
 
 ## 📂 Project Structure
-
+```text
 📂 skycaster/
 ├─ 📜 app.py               # Main CLI app with OpenAI integration
 ├─ 📜 prompts.py           # System + one-shot examples (prompt engineering)
 ├─ 📜 weather_providers.py # Mock & live weather data providers (facts)
 ├─ 📜 requirements.txt     # Python dependencies
 └─ 🔑 .env                 # API key & config (not committed)
+```
 
 **Why `weather_providers.py`?**  
 - LLMs (like GPT-4o) generate language but don’t know today’s actual weather.  
