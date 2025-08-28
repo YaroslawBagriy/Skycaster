@@ -1,22 +1,32 @@
+# weather_providers.py
 import os
 import requests
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 
 def mock_weather(city: str) -> Dict[str, Any]:
-    # Stable demo response for local testing / CI
-    return {
-        "city": city,
-        "temp_f": 60,
-        "condition": "cloudy",
-        "precip_prob": 10,
-        "when": "today",
-    }
+    return {"city": city, "temp_f": 60, "condition": "cloudy", "precip_prob": 10, "when": "today"}
+
+def geocode_city(city: str) -> Tuple[Optional[float], Optional[float]]:
+    """
+    Minimal geocoder using Open-Meteo's free geocoding API.
+    Returns (lat, lon) or (None, None) if not found.
+    """
+    try:
+        r = requests.get(
+            "https://geocoding-api.open-meteo.com/v1/search",
+            params={"name": city, "count": 1},
+            timeout=10,
+        )
+        r.raise_for_status()
+        data = r.json()
+        results = data.get("results") or []
+        if not results:
+            return None, None
+        return results[0].get("latitude"), results[0].get("longitude")
+    except Exception:
+        return None, None
 
 def open_meteo_weather(city: str, lat: float, lon: float) -> Dict[str, Any]:
-    """
-    Simple free API example (no key required) — https://open-meteo.com/
-    You can replace with any other provider later.
-    """
     url = (
         "https://api.open-meteo.com/v1/forecast"
         f"?latitude={lat}&longitude={lon}"
@@ -42,19 +52,25 @@ def open_meteo_weather(city: str, lat: float, lon: float) -> Dict[str, Any]:
 
 def get_weather(city: str, lat: Optional[float] = None, lon: Optional[float] = None) -> Dict[str, Any]:
     """
-    Switches between mock/live modes based on USE_LIVE_WEATHER.
-    - Live mode requires lat/lon to actually query Open-Meteo.
-    - If lat/lon are missing, we just return mock data for now.
-    - Later, you can add geocoding here to look up coords from the city name.
+    Live mode:
+      - If lat/lon provided, use them.
+      - Else geocode the city -> lat/lon.
+      - If geocoding fails, fallback to mock.
     """
     use_live = os.getenv("USE_LIVE_WEATHER", "false").lower() == "true"
 
     if use_live:
+        # Use coords if we have them; otherwise try geocoding.
+        if lat is None or lon is None:
+            glat, glon = geocode_city(city)
+            lat = lat if lat is not None else glat
+            lon = lon if lon is not None else glon
+
         if lat is not None and lon is not None:
             return open_meteo_weather(city, lat, lon)
-        else:
-            # Live mode requested but no coords given → fallback to mock
-            # (future: plug in geocoding here to use `city`)
-            return mock_weather(city)
 
+        # Live requested but we couldn't get coords → graceful fallback
+        return mock_weather(city)
+
+    # Not in live mode → mock
     return mock_weather(city)

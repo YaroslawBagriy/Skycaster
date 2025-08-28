@@ -112,6 +112,7 @@ def run(user_text: str, default_city: str,
         else:
             result = {"error": f"Unknown tool {fn_name}"}
 
+        print("\nresult: ", result)
         tool_messages.append({
             "role": "tool",
             "tool_call_id": tc.id,
